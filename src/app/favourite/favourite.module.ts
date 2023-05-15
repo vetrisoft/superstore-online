@@ -1,11 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { IonicModule } from '@ionic/angular';
-
-import { FavouritePageRoutingModule } from './favourite-routing.module';
-
+import { FavoritePageRoutingModule } from './favourite-routing.module';
 import { FavouritePage } from './favourite.page';
 
 @NgModule({
@@ -13,8 +10,8 @@ import { FavouritePage } from './favourite.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    FavouritePageRoutingModule
+    FavoritePageRoutingModule
   ],
   declarations: [FavouritePage]
 })
-export class FavouritePageModule {}
+export class FavoritePageModule { }

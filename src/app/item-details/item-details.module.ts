@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { IonicModule } from '@ionic/angular';
-
+import { CommonFeaturesModule } from '../common/common-features.module';
+import { AuthenticationService } from '../services/authentication-service';
 import { ItemDetailsPageRoutingModule } from './item-details-routing.module';
 
 import { ItemDetailsPage } from './item-details.page';
@@ -13,6 +13,7 @@ import { ItemDetailsPage } from './item-details.page';
     CommonModule,
     FormsModule,
     IonicModule,
+    CommonFeaturesModule,
     ItemDetailsPageRoutingModule
   ],
   declarations: [ItemDetailsPage]
