@@ -1,4 +1,4 @@
-package com.varshatraditionals.MainActivity;
+package com.varshatraditionals;
 
 import com.getcapacitor.BridgeActivity;
 
