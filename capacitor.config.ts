@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'ionic-firebase-authentication',
+  appId: 'com.varshatraditionals.online',
+  appName: 'VarshaTraditionals',
   webDir: 'www',
   bundledWebRuntime: false
 };

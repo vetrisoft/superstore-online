@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../services/authentication-service';
+import { CognitoServiceProvider } from "../../providers/cognito-service/cognito-service";
 
 @Component({
   selector: 'app-login',
@@ -8,14 +9,16 @@ import { AuthenticationService } from '../services/authentication-service';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
+
   constructor(
     public authService: AuthenticationService,
     public router: Router
+    //,public CognitoSerive: CognitoServiceProvider
   ) {}
 
   ngOnInit() {}
 
-  logIn(email, password) {
+ logIn(email, password) {
     this.authService
       .SignIn(email.value, password.value)
       .then((res) => {
@@ -30,4 +33,5 @@ export class LoginPage implements OnInit {
         window.alert(error.message);
       });
   }
+ 
 }
