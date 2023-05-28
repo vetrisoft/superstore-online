@@ -12,8 +12,8 @@ export class LoginPage implements OnInit {
 
   constructor(
     public authService: AuthenticationService,
-    public router: Router
-    //,public CognitoSerive: CognitoServiceProvider
+    public router: Router,
+    public CognitoSerive: CognitoServiceProvider
   ) {}
 
   ngOnInit() {}

@@ -1,11 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\android\\app\\src",
     "\\src\\app",
-    "\\src\\app\\categories",
     "\\src\\app\\login",
-    "\\src\\app\\services"
+    "\\src\\providers",
+    "\\src\\providers\\cognito-service"
   ],
   "SelectedNode": "\\src",
   "PreviewInSolutionExplorer": false

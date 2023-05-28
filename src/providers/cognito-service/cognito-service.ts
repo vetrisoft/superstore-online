@@ -1,106 +1,78 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 import * as AWSCognito from "amazon-cognito-identity-js";
-import { SystemVariableProvider } from "../system-variable/system-variable";
+import { BehaviorSubject } from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { Amplify,Auth} from 'aws-amplify/lib-esm/index';
 
-@Injectable()
+export interface IUser {
+  email: string;
+  password: string;
+  showPassword: boolean;
+  code: string;
+  name: string;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
 export class CognitoServiceProvider {
 
-  private POOL_SETTING = new SystemVariableProvider().SYSTEM_PARAMS.COGNITO_POOL;
-  
-  _USER_POOL = new AWSCognito.CognitoUserPool(this.POOL_SETTING);
+  private authenticationSubject: BehaviorSubject<any>;
 
-  signUp(email, password) {
-    return new Promise((resolved, reject) => {
-      let userAttribute = [];
-      userAttribute.push(
-        new AWSCognito.CognitoUserAttribute({ Name: "email", Value: email })
-      );
-
-      this._USER_POOL.signUp(email, password, userAttribute, null, function(
-        err,
-        result
-      ) {
-        if (err) {
-          reject(err);
-        } else {
-          resolved(result);
-        }
-      });
+  constructor() {
+    Amplify.configure({
+      Auth: environment.cognito,
     });
+
+    this.authenticationSubject = new BehaviorSubject<boolean>(false);
   }
 
-  confirmUser(verificationCode, userName) {
-    return new Promise((resolved, reject) => {
-      const cognitoUser = new AWSCognito.CognitoUser({
-        Username: userName,
-        Pool: this._USER_POOL
-      });
 
-      cognitoUser.confirmRegistration(verificationCode, true, function(
-        err,
-        result
-      ) {
-        if (err) {
-          reject(err);
-        } else {
-          resolved(result);
-        }
-      });
-    });
+  public confirmSignUp(user: IUser): Promise<any> {
+    return Auth.confirmSignUp(user.email, user.code);
   }
 
-  authenticate(email, password) {
-    return new Promise((resolved, reject) => {
-      const authDetails = new AWSCognito.AuthenticationDetails({
-        Username: email,
-        Password: password
+  public signIn(user: IUser): Promise<any> {
+    return Auth.signIn(user.email, user.password)
+      .then(() => {
+        this.authenticationSubject.next(true);
       });
-
-      const cognitoUser = new AWSCognito.CognitoUser({
-        Username: email,
-        Pool: this._USER_POOL
-      });
-
-      cognitoUser.authenticateUser(authDetails, {
-        onSuccess: result => {
-          resolved(result.getAccessToken().getJwtToken());
-        },
-        onFailure: err => {
-          reject(err);
-        },
-        newPasswordRequired: userAttributes => {
-          // User was signed up by an admin and must provide new
-          // password and required attributes, if any, to complete
-          // authentication.
-
-          // the api doesn't accept this field back
-          userAttributes.email = email;
-          delete userAttributes.email_verified;
-
-          cognitoUser.completeNewPasswordChallenge(password, userAttributes, {
-            onSuccess: function(result) {},
-            onFailure: function(error) {
-              reject(error);
-            }
-          });
-        }
-      });
-    });
   }
 
-  getLoggedUser() {
-    return new Promise((resolved, reject) => {
-      var cognitoUser = this._USER_POOL.getCurrentUser();
+  public signOut(): Promise<any> {
+    return Auth.signOut()
+      .then(() => {
+        this.authenticationSubject.next(false);
+      });
+  }
 
-      if (cognitoUser != null) {
-        cognitoUser.getSession(function(err, result) {
-          if (result) {
-            resolved(result.getIdToken().getJwtToken());
+  public isAuthenticated(): Promise<boolean> {
+    if (this.authenticationSubject.value) {
+      return Promise.resolve(true);
+    } else {
+      return this.getUser()
+        .then((user: any) => {
+          if (user) {
+            return true;
           } else {
-            reject(err);
+            return false;
           }
+        }).catch(() => {
+          return false;
         });
-      }
-    });
+    }
   }
+
+  public getUser(): Promise<any> {
+    return Auth.currentUserInfo();
+  }
+
+  public updateUser(user: IUser): Promise<any> {
+    return Auth.currentUserPoolUser()
+      .then((cognitoUser: any) => {
+        return Auth.updateUserAttributes(cognitoUser, user);
+      });
+  }
+
+
 }
